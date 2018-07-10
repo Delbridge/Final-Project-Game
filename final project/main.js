@@ -43,12 +43,28 @@ init();
 function init() {
 	// set up the scene
 	createScene();
-
+    audio();
 	//call game loop
 	update();
 }
 
+function audio(){
+// / create an AudioListener and add it to the camera
+var listener = new THREE.AudioListener();
+camera.add( listener );
 
+// create a global audio source
+var sound = new THREE.Audio( listener );
+
+// load a sound and set it as the Audio object's buffer
+var audioLoader = new THREE.AudioLoader();
+audioLoader.load( "The Tenacious.mp3", function( buffer ) {
+	sound.setBuffer( buffer );
+	sound.setLoop( true );
+	sound.setVolume( 0.5 );
+	sound.play();
+});
+}
 
 function createScene(){
 	hasCollided=false;
@@ -102,10 +118,12 @@ function createScene(){
 	//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
 	scoreText.style.width = 100;
 	scoreText.style.height = 100;
-	scoreText.style.backgroundColor = "white";
+	scoreText.style.color = "yellow";
 	scoreText.innerHTML = "0";
 	scoreText.style.top = 50 + 'px';
 	scoreText.style.left = 10 + 'px';
+	scoreText.style.fontSize = "40px";
+
 	document.body.appendChild(scoreText);
   
 //   var infoText = document.createElement('div');
