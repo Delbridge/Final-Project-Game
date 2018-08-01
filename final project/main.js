@@ -10,13 +10,13 @@ var ground;
 //var orbitControl;
 var rollingGroundSphere;
 var characterSphere;
-var rollingSpeed=0.008;
+var rollingSpeed=0.005;
 var characterRollingSpeed;
 var worldRadius=26;
 var characterRadius=0.2;
 var sphericalHelper;
 var pathAngleValues;
-var characterBaseY=1.8;
+var characterBaseY=1.9;
 var bounceValue=0.1;
 var gravity=0.005;
 var leftLane=-1;
@@ -58,7 +58,7 @@ var sound = new THREE.Audio( listener );
 
 // load a sound and set it as the Audio object's buffer
 var audioLoader = new THREE.AudioLoader();
-audioLoader.load( "The Tenacious.mp3", function( buffer ) {
+audioLoader.load( "audio/The Tenacious.mp3", function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
 	sound.setVolume( 0.5 );
@@ -83,7 +83,7 @@ function createScene(){
     scene.fog = new THREE.FogExp2( 0x777, 0.14 );
     camera = new THREE.PerspectiveCamera( 60, sceneWidth / sceneHeight, 0.1, 1000 );//perspective camera
     renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
-    renderer.setClearColor(0x000000, 0.0); 
+    renderer.setClearColor(0x000000, 0.2); 
     renderer.shadowMap.enabled = true;//enable shadow
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setSize( sceneWidth, sceneHeight );
@@ -187,14 +187,38 @@ function handleKeyDown(keyEvent){
 		bounceValue=0.06;
 	}
 }
+
 function addcharacter(){
 	
-	// var sphereTexture = new THREE.TextureLoader().load( 'lava.jpg' );
-
+	var sphereTexture = new THREE.TextureLoader().load( 'images/redsky.jpg' );
+	sphereTexture.wrapS = sphereTexture.wrapT = THREE.RepeatWrapping; 
+	// sphereTexture.repeat.set( 2, 2 )
+	var sphereMaterial = new THREE.MeshBasicMaterial( { map: sphereTexture, side: THREE.DoubleSide } ); 
 	var sphereGeometry = new THREE.DodecahedronGeometry( characterRadius, 1);
-	var sphereMaterial = new THREE.MeshStandardMaterial( {  color: 0x05b236, shading:THREE.FlatShading});
+	// var sphereMaterial = new THREE.MeshStandardMaterial( {  color: 0x05b236, shading:THREE.FlatShading});
 		// sphereTexture.needsUpdate = true; // important!
 		// window.onload = init;
+
+
+// var objLoader = new THREE.OBJLoader();
+// // new THREE.PlaneGeometry(100, 100, 100, 100),
+// objLoader.setMaterials(materials);
+// // objLoader.setPath('/examples/3d-obj-loader/assets/');
+// objLoader.load("androidBot.obj", function(object){
+
+// 	scene.add(object);
+// 	// mesh.position.set(5, 0, 4);
+// 			// Model/material loading!
+// var mtlLoader = new THREE.MTLLoader();
+// // mtlLoader.setTexturePath('/models3d-obj-loader/assets/');
+// // mtlLoader.setPath('/examples/3d-obj-loader/assets/');
+// mtlLoader.load("androidBot.mtl", function(materials){
+	
+// 	materials.preload();
+	
+// });
+
+// });
 
 	jumping=false;
 	characterSphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
@@ -205,47 +229,51 @@ function addcharacter(){
 	characterSphere.position.z=4.8;
 	currentLane=middleLane;
 	characterSphere.position.x=currentLane;
+
+
+
 }
+
 function addWorld(){
-	var sides=40;
+	var sides=30;
 	var tiers=40;
 	var sphereGeometry = new THREE.SphereGeometry( worldRadius, sides,tiers);
-	// var sphereTexture = new THREE.TextureLoader().load( 'checkerboard.png' );
-	// floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
-	// floorTexture.repeat.set( 10, 10 )
-	// var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } ); 
-	var sphereMaterial = new THREE.MeshPhongMaterial( {  color: 0x565b55, shading:THREE.FlatShading} )
+	var sphereTexture = new THREE.TextureLoader().load( 'images/galaxy.jpg' );
+	sphereTexture.wrapS = sphereTexture.wrapT = THREE.RepeatWrapping; 
+	sphereTexture.repeat.set( 20, 20 )
+	var sphereMaterial = new THREE.MeshBasicMaterial( { map: sphereTexture, side: THREE.DoubleSide } ); 
+	// var sphereMaterial = new THREE.MeshPhongMaterial( {  color: 0x2007331a, shading:THREE.FlatShading} )
 	
-	var vertexIndex;
-	var vertexVector= new THREE.Vector3();
-	var nextVertexVector= new THREE.Vector3();
-	var firstVertexVector= new THREE.Vector3();
-	var offset= new THREE.Vector3();
-	var currentTier=1;
-	var lerpValue=0.5;
-	var heightValue;
-	var maxHeight=0.07;
-	for(var j=1;j<tiers-2;j++){
-		currentTier=j;
-		for(var i=0;i<sides;i++){
-			vertexIndex=(currentTier*sides)+1;
-			vertexVector=sphereGeometry.vertices[i+vertexIndex].clone();
-			if(j%2!==0){
-				if(i==0){
-					firstVertexVector=vertexVector.clone();
-				}
-				nextVertexVector=sphereGeometry.vertices[i+vertexIndex+1].clone();
-				if(i==sides-1){
-					nextVertexVector=firstVertexVector;
-				}
-				lerpValue=(Math.random()*(0.75-0.25))+0.25;
-				vertexVector.lerp(nextVertexVector,lerpValue);
-			}
-			heightValue=(Math.random()*maxHeight)-(maxHeight/2);
-			offset=vertexVector.clone().normalize().multiplyScalar(heightValue);
-			sphereGeometry.vertices[i+vertexIndex]=(vertexVector.add(offset));
-		}
-	}
+	// var vertexIndex;
+	// var vertexVector= new THREE.Vector3();
+	// var nextVertexVector= new THREE.Vector3();
+	// var firstVertexVector= new THREE.Vector3();
+	// var offset= new THREE.Vector3();
+	// var currentTier=1;
+	// var lerpValue=0.5;
+	// var heightValue;
+	// var maxHeight=0.07;
+	// for(var j=1;j<tiers-2;j++){
+	// 	currentTier=j;
+	// 	for(var i=0;i<sides;i++){
+	// 		vertexIndex=(currentTier*sides)+1;
+	// 		vertexVector=sphereGeometry.vertices[i+vertexIndex].clone();
+	// 		if(j%2!==0){
+	// 			if(i==0){
+	// 				firstVertexVector=vertexVector.clone();
+	// 			}
+	// 			nextVertexVector=sphereGeometry.vertices[i+vertexIndex+1].clone();
+	// 			if(i==sides-1){
+	// 				nextVertexVector=firstVertexVector;
+	// 			}
+	// 			lerpValue=(Math.random()*(0.75-0.25))+0.25;
+	// 			vertexVector.lerp(nextVertexVector,lerpValue);
+	// 		}
+	// 		heightValue=(Math.random()*maxHeight)-(maxHeight/2);
+	// 		offset=vertexVector.clone().normalize().multiplyScalar(heightValue);
+	// 		sphereGeometry.vertices[i+vertexIndex]=(vertexVector.add(offset));
+	// 	}
+	// }
 	rollingGroundSphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
 	rollingGroundSphere.receiveShadow = true;
 	rollingGroundSphere.castShadow=false;
@@ -255,6 +283,7 @@ function addWorld(){
 	rollingGroundSphere.position.z=2;
 	addOffPathObstacles();
 }
+
 function addLight(){
 	var hemisphereLight = new THREE.HemisphereLight(0xfffafa,0x000000, .9)
 	scene.add(hemisphereLight);
@@ -268,6 +297,7 @@ function addLight(){
 	sun.shadow.camera.near = 0.5;
 	sun.shadow.camera.far = 50 ;
 }
+
 function addPathObst(){
 	var options=[0,1,2];
 	var lane= Math.floor(Math.random()*3);
@@ -278,6 +308,7 @@ function addPathObst(){
 		addOnPathObstacle(true,options[lane]);
 	}
 }
+
 // *adding obstacles off path to render in "bk" or rest of the "world"/platform
 function addOffPathObstacles(){
 	var numCylinders=100;
@@ -287,7 +318,8 @@ function addOffPathObstacles(){
 		addOnPathObstacle(false,i*gap, false);
 	}
 }
-function addOnPathObstacle(inPath, row, isLeft){// position of cylinders/obstacale
+
+function addOnPathObstacle(inPath, row, isLeft){// position of cylinders/obstacle
 	var newObst;
 	if(inPath){
 		if(obstaclesLoop.length==0)return;
@@ -314,22 +346,40 @@ function addOnPathObstacle(inPath, row, isLeft){// position of cylinders/obstaca
 	
 	rollingGroundSphere.add(newObst);
 }
+
 function createObstacles(){
-	var obstacleGeometry = new THREE.CylinderGeometry( 0.5, 0.5,2);
-	var obstacleMaterial = new THREE.MeshStandardMaterial( { color: 0x000}) // shading:THREE.FlatShading  } );
+	var Texture = new THREE.TextureLoader().load( 'images/crater.jpg' );
+	Texture.wrapS = Texture.wrapT = THREE.RepeatWrapping; 
+	// // Texture.repeat.set( 2, 2 )
+	var obstacleMaterial = new THREE.MeshBasicMaterial( { map: Texture, side: THREE.DoubleSide } ); 
+	var obstacleGeometry = new THREE.BoxGeometry( 0.5, 0.5, 2);
+	// var obstacleMaterial = new THREE.MeshStandardMaterial( { color: 0x000}) // shading:THREE.FlatShading  } );
 	var obstacle = new THREE.Mesh( obstacleGeometry, obstacleMaterial );
 	obstacle.position.y=0.25;
 	var obstacles =new THREE.Object3D();	
 	obstacles.add(obstacle);
 	
-	return obstacles;
+
+    // var planeGeometry = new THREE.BoxGeometry(0.5, 0.5, 2);
+	// var planeMaterial = new THREE.MeshBasicMaterial({color: 0x777})
+	// var obstacle2 = new THREE.Mesh(planeGeometry, planeMaterial);
+	// obstacle2.position.y=0.75;
+	// var obstacles =new THREE.Object3D();	
+	// obstacles.add(obstacle2);
+
+
+    
+	return obstacles ;
+
+	
 }
 
 
 function update(){
 	//stats.update();
     //animate
-    rollingGroundSphere.rotation.x += rollingSpeed;
+	rollingGroundSphere.rotation.x += rollingSpeed;
+	// newObst.rotation.x +=0.1;
     characterSphere.rotation.x -= characterRollingSpeed;
     if(characterSphere.position.y<=characterBaseY){
     	jumping=false;
@@ -351,6 +401,7 @@ function update(){
     render();
 	requestAnimationFrame(update);//request next update
 }
+
 function doOLogic(){
 	var oneObst;
 	var obstaclePos = new THREE.Vector3();
@@ -362,7 +413,7 @@ function doOLogic(){
 			obstaclesToRemove.push(oneObst);
 		}else{//check collision
 			if(obstaclePos.distanceTo(characterSphere.position)<=0.6){
-				console.log("hit");
+				// console.log("hit");
 				hasCollided=true;
 				explode();
 			}
@@ -375,9 +426,10 @@ function doOLogic(){
 		obstaclesInPath.splice(fromWhere,1);
 		obstaclesLoop.push(oneObst);
 		oneObst.visible=false;
-		console.log("remove obstacle");
+		// console.log("remove obstacle");
 	});
 }
+
 function doExplosionLogic(){
 	if(!particles.visible)return;
 	for (var i = 0; i < particleCount; i ++ ) {
@@ -404,6 +456,7 @@ function explode(){
 	explosionPower=1.07;
 	particles.visible=true;
 }
+
 function render(){
     renderer.render(scene, camera);//draw
 }
